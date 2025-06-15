@@ -1,13 +1,16 @@
-# React eSewa Integration Library
+# esewa-react
 
 A React library for integrating eSewa payment gateway into your React applications. This library handles hash signatures, base64 URL encoding, and provides a simple interface for initiating and verifying eSewa payments.
+
+[![npm version](https://img.shields.io/npm/v/esewa-react.svg)](https://www.npmjs.com/package/esewa-react)
+[![GitHub stars](https://img.shields.io/github/stars/pr4shxnt/esewa-js.svg?style=social)](https://github.com/pr4shxnt/esewa-js)
 
 ## Installation
 
 ```bash
-npm install esewa-js
+npm install esewa-react
 # or
-yarn add esewa-js
+yarn add esewa-react
 ```
 
 ## Features
@@ -23,27 +26,23 @@ yarn add esewa-js
 ### Basic Usage with React Hook
 
 ```tsx
-import { useEsewa } from 'esewa-js';
+import { useEsewa } from 'esewa-react';
 
 const YourComponent = () => {
-  const { initiatePayment, verifyPayment } = useEsewa({
+  const { initiatePayment } = useEsewa({
     merchantId: 'YOUR_MERCHANT_ID',
-    environment: 'test', // or 'production'
     successUrl: 'https://your-domain.com/success',
     failureUrl: 'https://your-domain.com/failure',
     secretKey: 'YOUR_SECRET_KEY',
+    isTest: true,
   });
 
   const handlePayment = () => {
     initiatePayment({
-      amount: 1000,
-      taxAmount: 130,
-      serviceCharge: 0,
-      deliveryCharge: 0,
-      productCode: 'EPAYTEST',
-      productName: 'Test Product',
-      productId: '123456',
-      referenceId: 'REF123456',
+      amount: '100',
+      productId: 'TXN_ID',
+      successUrl: 'https://your-domain.com/success',
+      failureUrl: 'https://your-domain.com/failure',
     });
   };
 
@@ -58,7 +57,7 @@ const YourComponent = () => {
 ### Using the Payment Button Component
 
 ```tsx
-import { EsewaPaymentButton } from 'esewa-js';
+import { EsewaPaymentButton } from 'esewa-react';
 
 const YourComponent = () => {
   return (
@@ -89,7 +88,7 @@ const YourComponent = () => {
 ### Verifying Payment Response
 
 ```tsx
-import { useEsewa } from 'esewa-js';
+import { useEsewa } from 'esewa-react';
 
 const SuccessPage = () => {
   const { verifyPayment } = useEsewa({
@@ -132,10 +131,10 @@ const SuccessPage = () => {
 The library requires the following configuration:
 
 - `merchantId`: Your eSewa merchant ID
-- `environment`: Either 'test' or 'production'
 - `successUrl`: URL to redirect after successful payment
 - `failureUrl`: URL to redirect after failed payment
 - `secretKey`: Your eSewa secret key
+- `isTest`: Boolean, set to true for test environment
 
 ## Payment Data
 
@@ -160,3 +159,9 @@ The payment data object should include:
 ## License
 
 MIT
+
+---
+
+- [GitHub Repository](https://github.com/pr4shxnt/esewa-js)
+- [Report Issues](https://github.com/pr4shxnt/esewa-js/issues)
+- [NPM Package](https://www.npmjs.com/package/esewa-react)

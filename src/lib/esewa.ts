@@ -1,85 +1,72 @@
-import crypto from 'crypto';
+// src/lib/esewa.ts
+import CryptoJS from 'crypto-js';
 
 export interface EsewaConfig {
   merchantId: string;
-  environment: 'test' | 'production';
+  secretKey: string;
   successUrl: string;
   failureUrl: string;
-  secretKey: string;
+  isTest?: boolean;
 }
 
 export interface EsewaPaymentData {
-  amount: number;
-  taxAmount: number;
-  serviceCharge: number;
-  deliveryCharge: number;
-  productCode: string;
-  productName: string;
+  amount: string;
   productId: string;
-  referenceId: string;
+  successUrl: string;
+  failureUrl: string;
 }
 
 export class EsewaPayment {
-  private config: EsewaConfig;
   private baseUrl: string;
+  private merchantId: string;
+  private secretKey: string;
+  private readonly signedFieldNames = 'total_amount,transaction_uuid,product_code';
 
   constructor(config: EsewaConfig) {
-    this.config = config;
-    this.baseUrl = config.environment === 'production'
-      ? 'https://esewa.com.np/epay/main'
-      : 'https://uat.esewa.com.np/epay/main';
-  }
-
-  private generateSignature(data: string): string {
-    const hmac = crypto.createHmac('sha256', this.config.secretKey);
-    hmac.update(data);
-    return hmac.digest('base64');
+    this.merchantId = config.merchantId;
+    this.secretKey = config.secretKey;
+    this.baseUrl = config.isTest 
+      ? 'https://rc-epay.esewa.com.np/api/epay/main/v2/form'
+      : 'https://epay.esewa.com.np/api/epay/main/v2/form';
   }
 
   private createPaymentString(data: EsewaPaymentData): string {
-    const {
-      amount,
-      taxAmount,
-      serviceCharge,
-      deliveryCharge,
-      productCode,
-      productName,
-      productId,
-      referenceId,
-    } = data;
+    // Format exactly as per working implementation
+    return `total_amount=${data.amount},transaction_uuid=${data.productId},product_code=${this.merchantId}`;
+  }
 
-    const totalAmount = amount + taxAmount + serviceCharge + deliveryCharge;
+  async generateSignature(data: EsewaPaymentData): Promise<string> {
+    const message = this.createPaymentString(data);
+    console.log('Message:', message);
+    console.log('Secret Key:', this.secretKey);
+
+    // Using CryptoJS exactly as in the working implementation
+    const hash = CryptoJS.HmacSHA256(message, this.secretKey);
+    const base64Signature = CryptoJS.enc.Base64.stringify(hash);
     
-    return `total_amount=${totalAmount},transaction_uuid=${referenceId},product_code=${productCode}`;
+    console.log('Generated Signature:', base64Signature);
+    return base64Signature;
   }
 
-  public generatePaymentUrl(data: EsewaPaymentData): string {
-    const paymentString = this.createPaymentString(data);
-    const signature = this.generateSignature(paymentString);
-    
-    const params = new URLSearchParams({
-      amt: String(data.amount),
-      psc: String(data.serviceCharge),
-      pdc: String(data.deliveryCharge),
-      txAmt: String(data.taxAmount),
-      tAmt: String(data.amount + data.taxAmount + data.serviceCharge + data.deliveryCharge),
-      pid: data.productId,
-      scd: this.config.merchantId,
-      su: this.config.successUrl,
-      fu: this.config.failureUrl,
-      signature: signature,
-    });
+  public async createPaymentForm(data: EsewaPaymentData): Promise<string> {
+    const signature = await this.generateSignature(data);
+    const taxAmount = 0; // Changed to 0 to match working implementation
+    const totalAmount = Number(data.amount); // No tax addition
 
-    return `${this.baseUrl}?${params.toString()}`;
+    return `
+      <form id="esewa-payment-form" action="${this.baseUrl}" method="POST" style="display:none;">
+        <input type="text" name="amount" value="${data.amount}" required />
+        <input type="text" name="tax_amount" value="${taxAmount}" required />
+        <input type="text" name="total_amount" value="${totalAmount}" required />
+        <input type="text" name="transaction_uuid" value="${data.productId}" required />
+        <input type="text" name="product_code" value="${this.merchantId}" required />
+        <input type="text" name="product_service_charge" value="0" required />
+        <input type="text" name="product_delivery_charge" value="0" required />
+        <input type="text" name="success_url" value="${data.successUrl}" required />
+        <input type="text" name="failure_url" value="${data.failureUrl}" required />
+        <input type="text" name="signed_field_names" value="${this.signedFieldNames}" required />
+        <input type="text" name="signature" value="${signature}" required />
+      </form>
+    `;
   }
-
-  public verifyPayment(
-    referenceId: string,
-    amount: number,
-    signature: string
-  ): boolean {
-    const data = `total_amount=${amount},transaction_uuid=${referenceId}`;
-    const expectedSignature = this.generateSignature(data);
-    return signature === expectedSignature;
-  }
-} 
+}
