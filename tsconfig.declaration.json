@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "declarationDir": "dist",
+    "outDir": "dist",
+    "noEmit": false,
+    "jsx": "react-jsx"   // or "react-jsxdev" if you want dev mode JSX transform
+  },
+  "include": ["src"]
+}

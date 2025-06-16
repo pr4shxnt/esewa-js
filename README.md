@@ -13,28 +13,18 @@ npm install esewa-react
 yarn add esewa-react
 ```
 
-## Features
-
-- Generate eSewa payment URLs with proper signature
-- Verify payment responses
-- React hook for easy integration
-- TypeScript support
-- Test and production environment support
-
-## Usage
-
-### Basic Usage with React Hook
+## Quick Start
 
 ```tsx
 import { useEsewa } from 'esewa-react';
 
-const YourComponent = () => {
-  const { initiatePayment } = useEsewa({
+function PaymentButton() {
+  const { initiatePayment, loading, error } = useEsewa({
     merchantId: 'YOUR_MERCHANT_ID',
     successUrl: 'https://your-domain.com/success',
     failureUrl: 'https://your-domain.com/failure',
     secretKey: 'YOUR_SECRET_KEY',
-    isTest: true,
+    isTest: true, // Set to false for production
   });
 
   const handlePayment = () => {
@@ -47,114 +37,71 @@ const YourComponent = () => {
   };
 
   return (
-    <button onClick={handlePayment}>
-      Pay with eSewa
-    </button>
+    <div>
+      {error && <div className="error">{error}</div>}
+      <button 
+        onClick={handlePayment}
+        disabled={loading}
+      >
+        {loading ? 'Processing...' : 'Pay with eSewa'}
+      </button>
+    </div>
   );
-};
+}
 ```
 
-### Using the Payment Button Component
+## Features
 
-```tsx
-import { EsewaPaymentButton } from 'esewa-react';
+- 🚀 Simple React hook for easy integration
+- 🔒 Secure payment handling with proper signatures
+- 📦 TypeScript support out of the box
+- 🧪 Test and production environment support
+- ⚡️ Lightweight and fast
 
-const YourComponent = () => {
-  return (
-    <EsewaPaymentButton
-      merchantId="YOUR_MERCHANT_ID"
-      environment="test"
-      successUrl="https://your-domain.com/success"
-      failureUrl="https://your-domain.com/failure"
-      secretKey="YOUR_SECRET_KEY"
-      paymentData={{
-        amount: 1000,
-        taxAmount: 130,
-        serviceCharge: 0,
-        deliveryCharge: 0,
-        productCode: 'EPAYTEST',
-        productName: 'Test Product',
-        productId: '123456',
-        referenceId: 'REF123456',
-      }}
-      className="custom-button-class"
-    >
-      Pay with eSewa
-    </EsewaPaymentButton>
-  );
-};
+## API Reference
+
+### useEsewa Hook
+
+```typescript
+const { initiatePayment, loading, error } = useEsewa(config);
 ```
 
-### Verifying Payment Response
+#### Config Options
 
-```tsx
-import { useEsewa } from 'esewa-react';
+| Option | Type | Required | Description |
+|--------|------|----------|-------------|
+| merchantId | string | Yes | Your eSewa merchant ID |
+| secretKey | string | Yes | Your eSewa secret key |
+| successUrl | string | Yes | URL to redirect after successful payment |
+| failureUrl | string | Yes | URL to redirect after failed payment |
+| isTest | boolean | No | Set to true for test environment |
 
-const SuccessPage = () => {
-  const { verifyPayment } = useEsewa({
-    merchantId: 'YOUR_MERCHANT_ID',
-    environment: 'test',
-    successUrl: 'https://your-domain.com/success',
-    failureUrl: 'https://your-domain.com/failure',
-    secretKey: 'YOUR_SECRET_KEY',
-  });
+#### Payment Data
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const referenceId = params.get('refId');
-    const amount = params.get('amt');
-    const signature = params.get('signature');
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| amount | string | Yes | Payment amount |
+| productId | string | Yes | Unique transaction ID |
+| successUrl | string | Yes | Success callback URL |
+| failureUrl | string | Yes | Failure callback URL |
 
-    if (referenceId && amount && signature) {
-      const isValid = verifyPayment(
-        referenceId,
-        Number(amount),
-        signature
-      );
+## Security Best Practices
 
-      if (isValid) {
-        // Payment is valid
-        console.log('Payment successful!');
-      } else {
-        // Payment verification failed
-        console.error('Payment verification failed!');
-      }
-    }
-  }, [verifyPayment]);
-
-  return <div>Processing payment...</div>;
-};
+1. Always use environment variables for sensitive data:
+```env
+VITE_ESEWA_MERCHANT_ID=your_merchant_id
+VITE_ESEWA_SECRET_KEY=your_secret_key
+VITE_ESEWA_SUCCESS_URL=https://your-domain.com/success
+VITE_ESEWA_FAILURE_URL=https://your-domain.com/failure
 ```
 
-## Configuration
+2. Use HTTPS for all URLs in production
+3. Keep your secret key secure and never expose it in client-side code
+4. Test thoroughly in test mode before going to production
 
-The library requires the following configuration:
+## Contributing
 
-- `merchantId`: Your eSewa merchant ID
-- `successUrl`: URL to redirect after successful payment
-- `failureUrl`: URL to redirect after failed payment
-- `secretKey`: Your eSewa secret key
-- `isTest`: Boolean, set to true for test environment
-
-## Payment Data
-
-The payment data object should include:
-
-- `amount`: Base amount
-- `taxAmount`: Tax amount
-- `serviceCharge`: Service charge
-- `deliveryCharge`: Delivery charge
-- `productCode`: Product code
-- `productName`: Product name
-- `productId`: Product ID
-- `referenceId`: Unique reference ID for the transaction
-
-## Security
-
-- Always use environment variables for sensitive data like `merchantId` and `secretKey`
-- Verify all payment responses using the `verifyPayment` method
-- Use HTTPS for all URLs
-- Keep your secret key secure and never expose it in client-side code
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 

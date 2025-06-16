@@ -1,2 +1,2 @@
 export * from './lib/esewa';
-export * from './lib/useEsewa'; 
+export { useEsewa } from './lib/useEsewa';
