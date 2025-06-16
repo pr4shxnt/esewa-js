@@ -21,4 +21,14 @@ declare module 'esewa-react' {
   }
 
   export function useEsewa(config: EsewaConfig): UseEsewaReturn;
+
+  export function useEsewa(): {
+    initiatePayment: (config: {
+      amount: number;
+      productId: string;
+      productName: string;
+      productUrl?: string;
+      callbackUrl: string;
+    }) => void;
+  };
 } 
