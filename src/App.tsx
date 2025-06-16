@@ -1,46 +1,46 @@
 // src/App.tsx
-import "./App.css";
-import { data } from "./components/data";
-import DataCard from "./components/dataCard";
-import "./index.css";
+import './App.css';
+import { useEsewa } from './lib/useEsewa';
 
 function App() {
-  
+  const { initiatePayment, loading, error } = useEsewa({
+    merchantId: 'EPAYTEST',
+    secretKey: '8gBm/:&EnhH.1/q',
+    successUrl: 'https://developer.esewa.com.np/success',
+    failureUrl: 'https://developer.esewa.com.np/failure',
+    isTest: true
+  });
+
+  const handlePayment = async () => {
+    // Using exact values from working implementation
+    await initiatePayment({
+      amount: '100',
+      productId: 'DNDGVIKDSNG12',
+      successUrl: 'https://developer.esewa.com.np/success',
+      failureUrl: 'https://developer.esewa.com.np/failure'
+    });
+  };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <header>
-        <title>esewa-react</title>
-        <h1 className="font-light text-2xl mb-4">
-          Hey Developer, This website/library is made by{" "}
-          <a href="https://www.prashantadhikari7.com.np" className="hover:text-purple-500 hover:underline">
-            Prashant Adhikari
-          </a>
-        </h1>
-        <div className="w-full mb-6 flex items-center justify-center ">
-          <div className="bg-pink-100 p-6">
-          <h1 className="text-4xl font-bold uppercase">Credentials</h1>
-          <div className="pt-3">
-          <p className="text-xl">Esewa-Id: 9806800001</p>
-          <p className="text-xl">Password: Nepal@123</p>
-          <p className="text-xl">OTP: 123456</p>
-</div></div>
-        </div>
-      </header>
-      <div className="grid grid-cols-4 gap-3">
-        {data.map((dataObjects, index) => {
-          return (
-            <div key={index} className="">
-              <DataCard
-                name={dataObjects.name}
-                price={dataObjects.price}
-                productCode={dataObjects.productCode}
-                image={dataObjects.image}
-              />
-            </div>
-          );
-        })}
-      </div>
+    <div style={{ padding: '20px' }}>
+      <h1>eSewa Payment Test</h1>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <button 
+        id="esewa-submit-button"
+        onClick={handlePayment}
+        disabled={loading}
+        style={{
+          padding: '10px 20px',
+          fontSize: '16px',
+          backgroundColor: '#5C2D91',
+          color: 'white',
+          border: 'none',
+          borderRadius: '4px',
+          cursor: loading ? 'not-allowed' : 'pointer'
+        }}
+      >
+        {loading ? 'Processing...' : 'Pay with eSewa'}
+      </button>
     </div>
   );
 }
