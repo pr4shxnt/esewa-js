@@ -1,20 +1,61 @@
 {
   "name": "esewa-react",
   "private": false,
-  "version": "1.0.21",
-  "description": "A simple React library for eSewa payment integration",
+  "version": "1.0.26",
   "type": "module",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.cjs.js",
+  "module": "./dist/index.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.cjs.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "files": [
     "dist"
   ],
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.10",
+    "crypto-js": "^4.2.0",
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0",
+    "tailwindcss": "^4.1.10"
+  },
+  "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
+    "@types/node": "^20.11.24",
+    "@types/react": "^18.2.56",
+    "@types/react-dom": "^18.2.19",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "typescript": "^5.2.2",
+    "vite": "^5.1.4"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
+  "keywords": [
+    "esewa",
+    "payment",
+    "react",
+    "typescript",
+    "nepal"
+  ],
+  "author": "Prashant Adhikari",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/pr4shxnt/esewa-js.git"
@@ -23,26 +64,7 @@
     "url": "https://github.com/pr4shxnt/esewa-js/issues"
   },
   "homepage": "https://github.com/pr4shxnt/esewa-js#readme",
-  "dependencies": {
-    "crypto-js": "^4.2.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  },
-  "devDependencies": {
-    "@types/crypto-js": "^4.2.2",
-    "@types/node": "^20.11.24",
-    "@types/react": "^18.2.56",
-    "@types/react-dom": "^18.2.19",
-    "@vitejs/plugin-react": "^4.2.1",
-    "typescript": "^5.2.2",
-    "vite": "^5.1.4"
-  },
-  "keywords": [
-    "esewa",
-    "payment",
-    "react",
-    "nepal"
-  ],
-  "author": "",
-  "license": "MIT"
+  "publishConfig": {
+    "access": "public"
+  }
 }
