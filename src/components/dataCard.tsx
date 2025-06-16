@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import {useEsewa} from "../lib/useEsewa"
 
 type Props = { name: string, price: number, productCode: string, image: string };

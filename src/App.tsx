@@ -5,7 +5,7 @@ import DataCard from "./components/dataCard";
 import "./index.css";
 
 function App() {
-  console.log(data);
+  
 
   return (
     <div style={{ padding: "20px" }}>
